@@ -12,7 +12,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	path = strings.TrimPrefix(path, "/")
 
 	if path == "" {
-		fmt.Fprintf(w, "Homepage")
+		http.NotFound(w, r)
 		return
 	}
 
