@@ -21,27 +21,29 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fName := path + ".jpg"
-	fullPath := fmt.Sprintf("web/images/%s", fName)
+	fullPathJpg := fmt.Sprintf("web/images/%s.jpg", path)
+	fullPathPng := fmt.Sprintf("web/images/%s.png", path)
 
-	if fileExists(fullPath) {
+	filePath, err := existingFile([]string{fullPathPng, fullPathJpg})
 
-		tmpl, err := template.ParseFiles("web/templates/invitation.html")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		data := Data{Url: "images/" + fName}
-
-		err = tmpl.Execute(w, data)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	if err != nil {
+		http.NotFound(w, r)
 		return
 	}
 
-	http.NotFound(w, r)
+	tmpl, err := template.ParseFiles("web/templates/invitation.html")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	data := Data{Url: strings.TrimPrefix(filePath, "web/")}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	return
+
 }

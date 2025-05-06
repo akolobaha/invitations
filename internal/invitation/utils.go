@@ -1,15 +1,22 @@
 package invitation
 
-import "os"
+import (
+	"errors"
+	"os"
+)
 
-func fileExists(filename string) bool {
-	_, err := os.Stat(filename)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false
+func existingFile(files []string) (string, error) {
+	for _, file := range files {
+		_, err := os.Stat(file)
+		if err != nil {
+			if os.IsNotExist(err) {
+				continue
+			}
+
+			continue
 		}
-
-		return false
+		return file, nil
 	}
-	return true
+
+	return "", errors.New("file not found")
 }
